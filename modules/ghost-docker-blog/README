@@ -1,0 +1,8 @@
+This lab was taken from LINUX ACADEMY. It goes over building a unique module for setting up infrastructure for a blog. Below was taken from the lab guide.
+
+
+LINUX ACADEMY GUIDE
+Creating a Ghost Blog Terraform Module
+
+Introduction
+After helping your friend deploying their Ghost blog using Terraform, youve experienced an increase in demand for the product. To make deploy Ghost blog easier, youve decided to convert your existing Terraform files into a module.

@@ -1,0 +1,3 @@
+Get Started AWS: https://learn.hashicorp.com/collections/terraform/aws-get-started?utm_source=terraform_io&utm_content=terraform_io_footer
+
+From this course you will build infrastructure, change infrastucture, destory infrastructure, define  input variables, query data with outputs, & store state remotely in terraform. This is a great lab to get your feet wet with using terraform with AWS.
