@@ -1,0 +1,6 @@
+**/**/.terraform/**
+**/**/*.hcl
+**/**/terraform.tfstate
+**/**/terraform.tfstate.backup
+blocks/dynamicblocks/tf.infra-build
+blocks/dynamicblocks/tf.infra-build0

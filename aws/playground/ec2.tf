@@ -57,29 +57,38 @@ resource "aws_instance" "playground-bastion" {
 # --------------------------------------------------------------------------
 # Private Bastion in us-east-1b: resources = {SG, AMI, KEYPAIR, INSTANCE}
 # --------------------------------------------------------------------------
-resource "aws_key_pair" "private_bastion" {
-  key_name   = "private"
-  public_key = file("./keys/private-bastion.pub")
-}
 
-resource "aws_security_group" "bastion_ssh" {
+resource "aws_security_group" "private_bastion_ssh" {
   vpc_id = aws_vpc.playground.id
   name   = "bastion-ssh"
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
+    cidr_blocks = [var.cidr_blocks.public_subnet_a1]
   }
-  egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
-  }
+  egress = [
+    {
+      from_port        = 0
+      to_port          = 0
+      protocol         = -1
+      cidr_blocks      = [var.cidr_blocks.anywhere]
+      description      = null
+      ipv6_cidr_blocks = null
+      prefix_list_ids  = null
+      security_groups  = null
+      self             = null
+    }
+
+  ]
+
   tags = {
-    Name = "SSH-Only"
+    Name = "playground.private-bastion"
   }
+}
+
+locals {
+  ubuntu_install_ansible = "./scripts/awsuserdata/ubuntu-install-ansible.sh"
 }
 
 resource "aws_instance" "playground-private-bastion" {
@@ -88,31 +97,38 @@ resource "aws_instance" "playground-private-bastion" {
   subnet_id                   = aws_subnet.playground-private-b1.id
   associate_public_ip_address = false
   key_name                    = aws_key_pair.localkey.key_name
-  vpc_security_group_ids      = [aws_security_group.bastion_ssh.id]
+  vpc_security_group_ids      = [aws_security_group.private_bastion_ssh.id]
+  user_data                   = fileexists(local.ubuntu_install_ansible) ? file(local.ubuntu_install_ansible) : null
   tags = {
     Name = "playground.private-bastion"
   }
 }
 
-resource "aws_security_group" "private" {
+resource "aws_security_group" "subservent" {
   vpc_id = aws_vpc.playground.id
-  name   = "private"
+  name   = "allow-private-bastion"
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["10.0.2.0/24"]
+    cidr_blocks = [var.cidr_blocks.private_subnet_b1]
   }
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["10.0.2.0/24"]
+    cidr_blocks = [var.cidr_blocks.private_subnet_b1]
   }
   tags = {
-    Name = "SSH-Only"
+    Name = "playground.subservents"
   }
 }
+
+resource "aws_key_pair" "private_bastion" {
+  key_name   = "private-bastion"
+  public_key = file("./keys/private-bastion.pub")
+}
+
 resource "aws_instance" "playground-subservents" {
   count                       = var.number_of_subservents
   ami                         = data.aws_ami.ubuntu_image.id
@@ -120,7 +136,8 @@ resource "aws_instance" "playground-subservents" {
   subnet_id                   = aws_subnet.playground-private-b2.id
   associate_public_ip_address = false
   key_name                    = aws_key_pair.private_bastion.key_name
-  vpc_security_group_ids      = [aws_security_group.private.id]
+  vpc_security_group_ids      = [aws_security_group.subservent.id]
+
   tags = {
     Name = "playground.subservent${count.index}"
   }
