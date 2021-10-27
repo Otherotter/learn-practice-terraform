@@ -1,6 +1,6 @@
 ## Chart
 
-![aws diagram](https://github.com/otherotter/learn-terraform/blob/master/VPC-Public-Private-Bastion.png?raw=true)
+![aws diagram](https://github.com/otherotter/learn-terraform/blob/master/VPC-Public-Private-Bastion.png)
 
 # Description
 This setup creates a public bastion, private bastion, and subservent machines serving the private bastion.
