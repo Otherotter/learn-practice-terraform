@@ -17,7 +17,7 @@ resource "aws_iam_group_membership" "admins" {
   group = "admin"
 }
 
-locals {
+locals = {
   adminepolicy = "../policies/json/AdministratorAccess.json"
 }
 
@@ -26,7 +26,7 @@ resource "aws_iam_group_policy" "admins" {
   group = "admins"
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
-  policy = fileexists(local.adminpolicy)? file(local.adminpolicy) : null 
+  policy = fileexists(local.adminpolicy)? file(local.adminpolicy) : null;
 
 }
 
