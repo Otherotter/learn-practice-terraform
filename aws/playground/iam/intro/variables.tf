@@ -15,15 +15,15 @@ variable "iam_groups" {
 variable "iam_user" {
   default = {
     0 = {
-      "name"  = "alpha"
+      "name"  = "admin-one"
       "group" = "admins"
     }
     1 = {
-      "name"  = "dev-foo"
+      "name"  = "developer one"
       "group" = "developers"
     }
     2 = {
-      "name"  = "cal-test"
+      "name"  = "tester one"
       "group" = "testers"
     }
   }
